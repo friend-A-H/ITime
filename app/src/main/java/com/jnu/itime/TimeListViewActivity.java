@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +33,16 @@ public class TimeListViewActivity extends AppCompatActivity {
         timeListView = (ListView)findViewById(R.id.time_list_view);
         TimeAdapter timeAdapter = new TimeAdapter(TimeListViewActivity.this, R.layout.list_view_time_item, listTime);
         timeListView.setAdapter(timeAdapter);
+
+        FloatingActionButton addItemButton = (FloatingActionButton)findViewById(R.id.add_time_button);
+        addItemButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Toast.makeText(TimeListViewActivity.this, "test", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(TimeListViewActivity.this,AddTimeActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void init() {
