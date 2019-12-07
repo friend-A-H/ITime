@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/add_time_toolbar_comfirm"
-        android:icon="@mipmap/ic_launcher_round"
+        android:icon="@drawable/confirm"
         android:title="add"
         app:showAsAction="always" />
 </menu>

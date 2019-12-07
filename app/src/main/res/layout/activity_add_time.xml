@@ -19,7 +19,7 @@
         android:id="@+id/add_image_view"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_marginTop="54dp"/>
+        android:layout_below="@id/mToolbar"/>
 
     <TextView
         android:id="@+id/fixed_title_text"
@@ -62,7 +62,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/add_image_view"
-        android:text="测试测试" />
+        android:text="时间测试" />
 
+    <TextView
+        android:id="@+id/test_pic_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/test_text_view"
+        android:text="相册测试" />
 
 </RelativeLayout>
