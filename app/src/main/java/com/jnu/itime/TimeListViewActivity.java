@@ -1,28 +1,22 @@
 package com.jnu.itime;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
+import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import java.util.ArrayList;
 import java.util.List;
+import com.jnu.itime.data.TimeAdapter;
 
 public class TimeListViewActivity extends AppCompatActivity {
-    ListView timeListView;
+    public static final int REQUEST_CODE_NEW_TIME = 902;
+    private ListView timeListView;
     private List<TimeItem> listTime = new ArrayList<>();
+    private TimeAdapter timeAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +25,7 @@ public class TimeListViewActivity extends AppCompatActivity {
 
         init();
         timeListView = (ListView)findViewById(R.id.time_list_view);
-        TimeAdapter timeAdapter = new TimeAdapter(TimeListViewActivity.this, R.layout.list_view_time_item, listTime);
+        timeAdapter = new TimeAdapter(TimeListViewActivity.this, R.layout.list_view_time_item, listTime);
         timeListView.setAdapter(timeAdapter);
 
         FloatingActionButton addItemButton = (FloatingActionButton)findViewById(R.id.add_time_button);
@@ -40,34 +34,41 @@ public class TimeListViewActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //Toast.makeText(TimeListViewActivity.this, "test", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(TimeListViewActivity.this,AddTimeActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_CODE_NEW_TIME);
+            }
+        });
+
+        timeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(TimeListViewActivity.this, "test", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void init() {
-        listTime.add(new TimeItem(R.drawable.time,"a","b","c","啊啊啊啊啊"));
+
     }
 
-    class TimeAdapter extends ArrayAdapter<TimeItem> {
-        private int resourceId;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case REQUEST_CODE_NEW_TIME:
+                if(resultCode == RESULT_OK){
+                    int setYear = data.getIntExtra("year",0);
+                    int setMonth = data.getIntExtra("month",0);
+                    int setDay = data.getIntExtra("day",0);
+                    int setHour = data.getIntExtra("hour",0);
+                    int setMinute = data.getIntExtra("minute",0);
+                    String uri = data.getStringExtra("imageUri");
+                    String addTitle = data.getStringExtra("title");
+                    String addDescription = data.getStringExtra("description");
+                    listTime.add(new TimeItem(setYear,setMonth,setDay,setHour,setMinute,uri,addTitle,addDescription,"还有1天"));
+                    timeAdapter.notifyDataSetChanged();
+                }
+                break;
 
-        public TimeAdapter(Context context, int resource, List<TimeItem> objects) {
-            super(context, resource, objects);
-            resourceId = resource;
-        }
-
-        @NonNull
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            TimeItem timeItem = getItem(position);//获取当前项的实例
-            View view = LayoutInflater.from(getContext()).inflate(resourceId, parent, false);
-            ((ImageView) view.findViewById(R.id.time_cover)).setImageResource(timeItem.getImageId());
-            ((TextView) view.findViewById(R.id.time_title)).setText(timeItem.getTitle());
-            ((TextView) view.findViewById(R.id.time_date)).setText(timeItem.getDate());
-            ((TextView) view.findViewById(R.id.time_description)).setText(timeItem.getDescription());
-            ((TextView) view.findViewById(R.id.time_countdown)).setText(timeItem.getCountdown());
-            return view;
         }
     }
 }
