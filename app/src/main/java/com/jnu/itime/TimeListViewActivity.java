@@ -11,11 +11,14 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 import com.jnu.itime.data.TimeAdapter;
+import com.jnu.itime.data.TimeSaver;
+import com.jnu.itime.data.model.MyTime;
 
 public class TimeListViewActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_NEW_TIME = 902;
     private ListView timeListView;
-    private List<TimeItem> listTime = new ArrayList<>();
+    private List<MyTime> listTime = new ArrayList<>();
+    TimeSaver timeSaver;
     private TimeAdapter timeAdapter;
 
     @Override
@@ -23,11 +26,14 @@ public class TimeListViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_time_list_view);
 
+        timeSaver = new TimeSaver(this);
+        listTime = timeSaver.load();
         init();
         timeListView = (ListView)findViewById(R.id.time_list_view);
         timeAdapter = new TimeAdapter(TimeListViewActivity.this, R.layout.list_view_time_item, listTime);
         timeListView.setAdapter(timeAdapter);
 
+        //添加按钮点击事件
         FloatingActionButton addItemButton = (FloatingActionButton)findViewById(R.id.add_time_button);
         addItemButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -38,6 +44,7 @@ public class TimeListViewActivity extends AppCompatActivity {
             }
         });
 
+        //每个Item点击事件
         timeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -56,15 +63,9 @@ public class TimeListViewActivity extends AppCompatActivity {
         switch (requestCode){
             case REQUEST_CODE_NEW_TIME:
                 if(resultCode == RESULT_OK){
-                    int setYear = data.getIntExtra("year",0);
-                    int setMonth = data.getIntExtra("month",0);
-                    int setDay = data.getIntExtra("day",0);
-                    int setHour = data.getIntExtra("hour",0);
-                    int setMinute = data.getIntExtra("minute",0);
-                    String uri = data.getStringExtra("imageUri");
-                    String addTitle = data.getStringExtra("title");
-                    String addDescription = data.getStringExtra("description");
-                    listTime.add(new TimeItem(setYear,setMonth,setDay,setHour,setMinute,uri,addTitle,addDescription,"还有1天"));
+                    MyTime addTime = (MyTime)data.getSerializableExtra("addTime");
+                    listTime.add(addTime);
+                    timeSaver.save();
                     timeAdapter.notifyDataSetChanged();
                 }
                 break;
