@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.jnu.itime.data.model.MyTime;
 
@@ -32,6 +33,7 @@ import java.util.Calendar;
 
 public class AddTimeActivity extends AppCompatActivity {
     public static final int RC_CHOOSE_PHOTO = 901;
+    private String parent;
     private MyTime myTime = new MyTime(0,0,0,0,0,"null","","");
     private int nowYear, nowMonth, nowDay, nowHour, nowMinute;
     private EditText addTitleText,addDescriptionText;
@@ -57,24 +59,18 @@ public class AddTimeActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);//左侧添加一个默认的返回图标
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        Calendar ca = Calendar.getInstance();
-        nowYear = ca.get(Calendar.YEAR);
-        nowMonth = ca.get(Calendar.MONTH);
-        nowDay = ca.get(Calendar.DAY_OF_MONTH);
-        nowHour = ca.get(Calendar.HOUR_OF_DAY);
-        nowMinute = ca.get(Calendar.MINUTE);
-
-        myTime.setYear(nowYear);
-        myTime.setMonth(nowMonth+1);
-        myTime.setDay(nowDay);
-        myTime.setMonth(0);
-        myTime.setMinute(0);
+        parent = getIntent().getStringExtra("parent");
+        init();
 
         mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.add_time_toolbar_comfirm:
+                        if(addTitleText.getText().toString().isEmpty()){
+                            Toast.makeText(AddTimeActivity.this, "标题不能为空", Toast.LENGTH_SHORT).show();
+                            return false;
+                        }
                         Intent intent = new Intent();
                         myTime.setImageUri(uri);
                         myTime.setTitle(addTitleText.getText().toString());
@@ -133,6 +129,46 @@ public class AddTimeActivity extends AppCompatActivity {
         });
     }
 
+    private void init(){
+        Calendar ca = Calendar.getInstance();
+        nowYear = ca.get(Calendar.YEAR);
+        nowMonth = ca.get(Calendar.MONTH);
+        nowDay = ca.get(Calendar.DAY_OF_MONTH);
+        nowHour = ca.get(Calendar.HOUR_OF_DAY);
+        nowMinute = ca.get(Calendar.MINUTE);
+
+        if(parent == "TimeListView"){
+            myTime.setYear(nowYear);
+            myTime.setMonth(nowMonth+1);
+            myTime.setDay(nowDay);
+            myTime.setMonth(0);
+            myTime.setMinute(0);
+        }
+        else{
+            myTime = (MyTime) getIntent().getSerializableExtra("selectTime");
+            addTitleText.setText(myTime.getTitle());
+            addDescriptionText.setText(myTime.getDescription());
+            Bitmap bitmap = null;
+            try {
+                uri = myTime.getImageUri();
+                Uri imageUri = Uri.parse(uri);
+                InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                bitmap = BitmapFactory.decodeStream(imageStream);
+                selectImage.setImageBitmap(bitmap);
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            dateText = String.format("%d年%d月%d日",myTime.getYear(),myTime.getMonth(),myTime.getDay());
+            if(myTime.getHour() != 0 || myTime.getMinute() != 0){
+                timeText = String.format(" %d:%d",myTime.getHour(),myTime.getMinute());
+                dateText = dateText + " " + timeText;
+            }
+            chooseTimeTextView.setText(dateText);
+        }
+    }
+
+    //设置toolbar的menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -140,6 +176,7 @@ public class AddTimeActivity extends AppCompatActivity {
         return true;
     }
 
+    //设置返回点击事件
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home){

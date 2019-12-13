@@ -30,6 +30,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class TimeDetailActivity extends AppCompatActivity {
+    public static final int REQUEST_CODE_MODIFY_TIME = 904;
     private MyTime selectTime;
     private ImageView detailTimeSetIv;
     private TextView detailTimeTitle, detailTimeDescription;
@@ -52,14 +53,56 @@ public class TimeDetailActivity extends AppCompatActivity {
         detailTimeDescription = (TextView)findViewById(R.id.detail_fixed_description_text);
         detailTimeSetTime = (TextView)findViewById(R.id.detail_fixed_set_time_text);
         detailTimeCountdown = (TextView)findViewById(R.id.detail_fixed_countdown_text);
-        calculateDifTime(selectTime.getYear(), selectTime.getMonth(), selectTime.getDay(), selectTime.getHour(), selectTime.getMinute(), 0);
-        startRun();
 
         Toolbar detailToolbar = findViewById(R.id.detail_time_toolbar);
         setSupportActionBar(detailToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);//左侧添加一个默认的返回图标
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        init();
+        startRun();
+
+        detailToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.detail_time_toolbar_delete:
+                        new AlertDialog.Builder(TimeDetailActivity.this)
+                                .setTitle("提示")
+                                .setMessage("是否删除该时刻？")
+                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        Intent intent = new Intent();
+                                        intent.putExtra("deletePosition",itemPosition);
+                                        setResult(RESULT_FIRST_USER,intent);
+                                        TimeDetailActivity.this.finish();
+                                    }
+                                })
+                                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                                    }
+                                })
+                                .create().show();
+                        break;
+                    case R.id.detail_time_toolbar_share:
+                        break;
+                    case R.id.detail_time_toolbar_modify:
+                        Intent intent = new Intent(TimeDetailActivity.this,AddTimeActivity.class);
+                        intent.putExtra("parent","TimeDetail");
+                        intent.putExtra("selectTime",selectTime);
+                        startActivityForResult(intent, REQUEST_CODE_MODIFY_TIME);
+                        break;
+                }
+                return false;
+            }
+        });
+    }
+
+    public void init(){
+        calculateDifTime(selectTime.getYear(), selectTime.getMonth(), selectTime.getDay(), selectTime.getHour(), selectTime.getMinute(), 0);
         if(selectTime.getImageUri().equals("null")){
             detailTimeSetIv.setImageResource(R.drawable.time);
         }
@@ -109,40 +152,6 @@ public class TimeDetailActivity extends AppCompatActivity {
         }
         setDateText = setDateText + "  " + setWeek;
         detailTimeSetTime.setText(setDateText);
-
-        detailToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.detail_time_toolbar_delete:
-                        new AlertDialog.Builder(TimeDetailActivity.this)
-                                .setTitle("提示")
-                                .setMessage("是否删除该时刻？")
-                                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        Intent intent = new Intent();
-                                        intent.putExtra("deletePosition",itemPosition);
-                                        setResult(RESULT_FIRST_USER,intent);
-                                        TimeDetailActivity.this.finish();
-                                    }
-                                })
-                                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                                    }
-                                })
-                                .create().show();
-                        break;
-                    case R.id.detail_time_toolbar_share:
-                        break;
-                    case R.id.detail_time_toolbar_modify:
-                        break;
-                }
-                return false;
-            }
-        });
     }
 
     //设置toolbar的menu
@@ -160,6 +169,19 @@ public class TimeDetailActivity extends AppCompatActivity {
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case REQUEST_CODE_MODIFY_TIME:
+                if(resultCode == RESULT_OK){
+                    selectTime = (MyTime) data.getSerializableExtra("addTime");
+                    init();
+                }
+                break;
+        }
     }
 
     public void calculateDifTime(int setYear, int setMonth, int setDay, int setHour, int setMin, int setSec){
