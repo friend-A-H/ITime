@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_time"
+            android:icon="@drawable/home"
+            android:title="时刻" />
+        <item
+            android:id="@+id/nav_compoent"
+            android:icon="@drawable/component"
+            android:title="小部件" />
+        <item
+            android:id="@+id/nav_theme_color"
+            android:icon="@drawable/color_palette"
+            android:title="主题色" />
+        <item
+            android:id="@+id/nav_advance"
+            android:icon="@drawable/star"
+            android:title="高级版" />
+    </group>
+
+    <group>
+            <item
+                android:id="@+id/nav_lock"
+                android:icon="@drawable/lock"
+                android:title="应用锁" />
+
+            <item
+                android:id="@+id/nav_set"
+                android:icon="@drawable/set"
+                android:title="设置" />
+
+            <item
+                android:id="@+id/nav_about"
+                android:icon="@drawable/about"
+                android:title="关于" />
+
+            <item
+                android:id="@+id/nav_help"
+                android:icon="@drawable/dialogue"
+                android:title="帮助与反馈" />
+    </group>
+</menu>
