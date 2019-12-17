@@ -2,6 +2,7 @@ package com.jnu.itime.data;
 
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -32,9 +33,11 @@ import static com.jnu.itime.TimeListViewActivity.REQUEST_CODE_NEW_TIME;
  */
 public class TimeFragment extends Fragment {
     private TimeAdapter timeAdapter;
+    private FloatingActionButton addItemButton;
     TimeSaver timeSaver;
     private List<MyTime> listTime = new ArrayList<>();
     ListView timeListView;
+    int setColor = 0;
 
     public TimeFragment() {
         // Required empty public constructor
@@ -63,13 +66,17 @@ public class TimeFragment extends Fragment {
         });
 
         //添加按钮点击事件
-        FloatingActionButton addItemButton = (FloatingActionButton)view.findViewById(R.id.add_time_button);
+        addItemButton = (FloatingActionButton)view.findViewById(R.id.add_time_button);
+        ColorSaver colorSaver = new ColorSaver(getContext());
+        setColor = colorSaver.load();
+        addItemButton.setBackgroundTintList(ColorStateList.valueOf(setColor));
         addItemButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Toast.makeText(TimeListViewActivity.this, "test", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getContext(), AddTimeActivity.class);
                 intent.putExtra("parent","TimeListView");
+                intent.putExtra("color",setColor);
                 startActivityForResult(intent, REQUEST_CODE_NEW_TIME);
             }
         });
@@ -102,6 +109,13 @@ public class TimeFragment extends Fragment {
                     timeSaver.save();
                     timeAdapter.notifyDataSetChanged();
                 }
+        }
+    }
+
+    public void setColor(int color){
+        if(color != setColor) {
+            setColor = color;
+            addItemButton.setBackgroundTintList(ColorStateList.valueOf(setColor));
         }
     }
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/detail_time_toolbar_delete"
+        android:icon="@drawable/delete"
+        android:title="delete"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/detail_time_toolbar_share"
+        android:icon="@android:drawable/ic_menu_share"
+        android:title="share"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/detail_time_toolbar_modify"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="modify"
+        app:showAsAction="always" />
+</menu>
