@@ -3,6 +3,7 @@ package com.jnu.itime;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -25,6 +26,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.jnu.itime.data.ColorSaver;
+import com.jnu.itime.data.TimeSaver;
 import com.jnu.itime.data.model.MyTime;
 
 import java.io.FileNotFoundException;
@@ -41,6 +44,7 @@ public class AddTimeActivity extends AppCompatActivity {
     private String dateText,timeText;
     private TextView chooseTimeTextView, choosePicTextView;
     private ImageView selectImage;
+    private ConstraintLayout selectTimeLayout, selecetPicLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +58,8 @@ public class AddTimeActivity extends AppCompatActivity {
         chooseTimeTextView = (TextView)findViewById(R.id.add_time_text);
         choosePicTextView = (TextView)findViewById(R.id.add_pic_text);
         selectImage = (ImageView)findViewById(R.id.add_image_view);
+        selectTimeLayout = (ConstraintLayout)findViewById(R.id.select_time_layout);
+        selecetPicLayout = (ConstraintLayout)findViewById(R.id.selecet_pic_layout);
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);//左侧添加一个默认的返回图标
@@ -84,7 +90,7 @@ public class AddTimeActivity extends AppCompatActivity {
             }
         });
 
-        chooseTimeTextView.setOnClickListener(new View.OnClickListener() {
+        selectTimeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(AddTimeActivity.this, new DatePickerDialog.OnDateSetListener() {
@@ -111,7 +117,7 @@ public class AddTimeActivity extends AppCompatActivity {
             }
         });
 
-        choosePicTextView.setOnClickListener(new View.OnClickListener() {
+        selecetPicLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //动态申请获取访问 读写磁盘的权限
@@ -137,12 +143,14 @@ public class AddTimeActivity extends AppCompatActivity {
         nowHour = ca.get(Calendar.HOUR_OF_DAY);
         nowMinute = ca.get(Calendar.MINUTE);
 
-        if(parent == "TimeListView"){
+        if(parent.equals("TimeListView")){
             myTime.setYear(nowYear);
             myTime.setMonth(nowMonth+1);
             myTime.setDay(nowDay);
-            myTime.setMonth(0);
+            myTime.setHour(0);
             myTime.setMinute(0);
+            int setColor = getIntent().getIntExtra("color",-16776961);
+            selectImage.setBackgroundColor(setColor);
         }
         else{
             myTime = (MyTime) getIntent().getSerializableExtra("selectTime");

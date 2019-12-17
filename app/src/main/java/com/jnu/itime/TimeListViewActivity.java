@@ -7,24 +7,15 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentTransaction;
-
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Toast;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.google.android.material.navigation.NavigationView;
 import com.jnu.itime.data.AboutFragment;
-import com.jnu.itime.data.TimeAdapter;
+import com.jnu.itime.data.ColorPickerDialog;
+import com.jnu.itime.data.ColorSaver;
 import com.jnu.itime.data.TimeFragment;
-import com.jnu.itime.data.TimeSaver;
-import com.jnu.itime.data.model.MyTime;
 
 public class TimeListViewActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_NEW_TIME = 902;
@@ -35,20 +26,25 @@ public class TimeListViewActivity extends AppCompatActivity {
     private TimeFragment timeFragment;
     private AboutFragment aboutFragment;
     private FragmentTransaction transaction;
+    private ColorPickerDialog dialog;
+    private ColorSaver colorSaver;
+    int setColor = -16776961;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_time_list_view);
 
-
+        toolbar=findViewById(R.id.general_toolbar);
+        drawerLayout=findViewById(R.id.drawer_layout);
+        navigationView=(NavigationView)findViewById(R.id.nav_view);
 
         timeFragment = new TimeFragment();
         aboutFragment = new AboutFragment();
 
-        toolbar=findViewById(R.id.general_toolbar);
-        drawerLayout=findViewById(R.id.drawer_layout);
-        navigationView=(NavigationView)findViewById(R.id.nav_view);
+        colorSaver = new ColorSaver(TimeListViewActivity.this);
+        setColor = colorSaver.load();
+        toolbar.setBackgroundColor(setColor);
 
         setSupportActionBar(toolbar);  //让toolbar去取代actionbar
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -84,6 +80,20 @@ public class TimeListViewActivity extends AppCompatActivity {
                         transaction.show(aboutFragment);
                         transaction.commit();
                         drawerLayout.closeDrawer(GravityCompat.START);
+                        break;
+                    case R.id.nav_theme_color:
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        dialog = new ColorPickerDialog(TimeListViewActivity.this, " ",
+                                new ColorPickerDialog.OnColorChangedListener() {
+                                    @Override
+                                    public void colorChanged(int color) {
+                                        toolbar.setBackgroundColor(color);
+                                        timeFragment.setColor(color);
+                                        setColor = color;
+                                        colorSaver.save(setColor);
+                                    }
+                                });
+                        dialog.show();
                         break;
                     default:
                         Toast.makeText(TimeListViewActivity.this, menuItem.getTitle(), Toast.LENGTH_SHORT).show();
