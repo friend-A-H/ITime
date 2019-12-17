@@ -166,6 +166,10 @@ public class TimeDetailActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home){
+            Intent intent = new Intent();
+            intent.putExtra("modifyTime",selectTime);
+            intent.putExtra("itemPositon",itemPosition);
+            setResult(RESULT_OK,intent);
             finish();
         }
         return super.onOptionsItemSelected(item);
